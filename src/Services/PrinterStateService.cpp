@@ -20,6 +20,17 @@ const char *PrinterStateService::getStateString()
 
 void PrinterStateService::setState(PrinterState newState)
 {
+    // Ignore state changes while in RECENTLY_PRINTED cooldown
+    if (_state == PrinterState::RECENTLY_PRINTED && newState == PrinterState::IDLE)
+    {
+        if (_debug)
+        {
+            Serial.printf("Ignoring external state change to '%s' while in 'RECENTLY_PRINTED' cooldown.\n",
+                          printerStateToString(newState));
+        }
+        return;
+    }
+
     _lastStateChangeTimeMs = millis();
     _previousState = _state;
 
@@ -62,7 +73,8 @@ void PrinterStateService::handle()
         {
             Serial.printf("Timer expired. Changing state from 'RECENTLY_PRINTED' to '%s'.\n", _targetStateAfterCooldown);
         }
-        setState(_targetStateAfterCooldown);
+        _previousState = _state;
+        _state = _targetStateAfterCooldown;
     }
 }
 
