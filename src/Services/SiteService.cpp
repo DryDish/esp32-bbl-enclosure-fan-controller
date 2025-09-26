@@ -1,5 +1,6 @@
 #include <ArduinoJson.h>
 
+#include "Services/PrinterStateService.h"
 #include "Services/SiteService.h"
 #include "HTML/index.h"
 
@@ -20,6 +21,8 @@ void SiteService::_handleData()
 {
     JsonDocument json;
     json["motherboardTemperature"] = _data.MBTemperature;
+    json["enclosureTemperature"] = _data.EnclosureTemperature;
+    json["printerState"] = _data.PrinterState;
     json["motherboardInFanSpeedPercent"] = _data.MBInFanSpeedPercent;
     json["motherboardInFanRPM"] = _data.MBInFanRPM;
     json["motherboardOutFanSpeedPercent"] = _data.MBOutFanSpeedPercent;

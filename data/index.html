@@ -76,8 +76,16 @@
     <div class="container">
       <h1>ESP32 Fan & Temp Monitor</h1>
       <div class="data-card">
-        <span class="data-label">Temperature: </span>
-        <span id="temperature-value" class="data-value">--.- °C</span>
+        <span class="data-label">Motherboard Temperature: </span>
+        <span id="mb-temperature-value" class="data-value">--.- °C</span>
+      </div>
+      <div class="data-card">
+        <span class="data-label">Enclosure Temperature: </span>
+        <span id="enclosure-temperature-value" class="data-value">--.- °C</span>
+      </div>
+      <div class="data-card">
+        <span class="data-label">Printer State: </span>
+        <span id="printer-state-value" class="data-value">----</span>
       </div>
       <div class="data-card fan-group">
         <h2>Fan Speed & Target RPM</h2>
@@ -126,11 +134,14 @@
     </div>
     <script>
       function fetchData() {
-        var xhttp = new XMLHttpRequest();
+        const xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
           if (this.readyState == 4 && this.status == 200) {
-            var data = JSON.parse(this.responseText);
-            document.getElementById("temperature-value").innerHTML = data.motherboardTemperature.toFixed(2) + " °C";
+            const data = JSON.parse(this.responseText);
+            document.getElementById("mb-temperature-value").innerHTML = data.motherboardTemperature.toFixed(2) + " °C";
+            document.getElementById("enclosure-temperature-value").innerHTML =
+              data.enclosureTemperature.toFixed(2) + " °C";
+            document.getElementById("printer-state-value").innerHTML = data.printerState;
 
             document.getElementById("in-fan-speed-percent").innerHTML = data.motherboardInFanSpeedPercent + "%";
             document.getElementById("out-fan-speed-percent").innerHTML = data.motherboardOutFanSpeedPercent + "%";

@@ -52,7 +52,7 @@ static const ThermistorConfig thermistorConfig = {
 
 // Temperature Sensor
 static const TemperatureSensorConfig temperatureSensorConfig = {
-    .gpioPin = GPIO_NUM_35,
+    .gpioPin = GPIO_NUM_32,
     .sampleIntervalMs = 500,
 };
 
@@ -88,6 +88,7 @@ static const RelayConfig relayConfig = {
 // Site
 static SiteSensorData sensors = {
     .MBTemperature = 0,
+    .EnclosureTemperature = 0,
     .MBInFanSpeedPercent = 0,
     .MBInFanRPM = 0,
     .MBOutFanSpeedPercent = 0,
@@ -108,7 +109,7 @@ static MQTTService mqttService(mqttConfig, printerStateService, SHOW_LOGS);
 
 static ThermistorService motherboardTermistor(thermistorConfig);
 
-static TemperatureSensorService enclosureTemperatureProbe(temperatureSensorConfig);
+static TemperatureSensorService enclosureTemperatureProbe(temperatureSensorConfig, SHOW_LOGS);
 
 static FanService fanMotherboardInService(fanMotherboardInConfig);
 static FanService fanMotherboardOutService(fanMotherboardOutConfig);
@@ -180,11 +181,13 @@ void loop()
 
         const PrinterState &currentState = printerStateService.getState();
         sensors.MBTemperature = motherboardTermistor.getTemperature();
+        sensors.EnclosureTemperature = enclosureTemperatureProbe.getTemperature();
+        sensors.PrinterState = PrinterStateService::printerStateToString(currentState);
 
         if (SHOW_LOGS)
         {
-            Serial.printf("Printer state: %s | Temperature: %.2f°C\n",
-                          PrinterStateService::printerStateToString(currentState), sensors.MBTemperature);
+            Serial.printf("Printer state: %s | MB Temperature: %.2f°C | Enclosure Temperature: %.2f°C\n",
+                          PrinterStateService::printerStateToString(currentState), sensors.MBTemperature, sensors.EnclosureTemperature);
         }
 
         int fanSpeedPercent = getFanSpeedPercent(sensors.MBTemperature);

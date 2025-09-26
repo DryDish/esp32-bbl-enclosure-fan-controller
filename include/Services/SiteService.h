@@ -1,11 +1,14 @@
 #pragma once
 
 #include "services.h"
+#include "Services/PrinterStateService.h"
 #include <WebServer.h>
 
 struct SiteSensorData
 {
     float MBTemperature;
+    float EnclosureTemperature;
+    const char *PrinterState;
     int MBInFanSpeedPercent;
     int MBInFanRPM;
     int MBOutFanSpeedPercent;
